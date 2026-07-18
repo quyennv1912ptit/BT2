@@ -1,7 +1,10 @@
 import React, { useState } from "react";
 import { validateFullName, validateEmail, validatePassword, validatePhoneNumber } from "../../utils/validators";
+import { useNavigate } from "react-router-dom";
 
 const RegisterModal = ({ setActiveModal }) => {
+    const navigate = useNavigate();
+
     const [fullName, setFullName] = useState("");
     const [fullNameError, setFullNameError] = useState("");
 
@@ -33,16 +36,14 @@ const RegisterModal = ({ setActiveModal }) => {
 
         if(!nameErr && !emailErr && !passwordErr && !phoneErr) {
             alert("Đăng ký thành công, vui lòng đăng nhập");
-            if (setActiveModal) {
-                setActiveModal("login");
-            }
+            navigate("/login")
         }
     };
 
     return (
         <div className="modal-overlay">
             <div className="modal-content">
-                <button className="close-btn" onClick={() => setActiveModal(null)}>X</button>
+                <button className="close-btn" onClick={() => navigate(-1)}>X</button>
                 <h2>Đăng ký</h2>
                 <form onSubmit={handleOnSubmit}>
                     <div className="form-group">

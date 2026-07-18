@@ -1,7 +1,10 @@
 import React, { useRef } from "react";
 import { validateEmail, validatePassword } from "../../utils/validators";
+import { useNavigate } from "react-router-dom";
 
 const LoginModal = ({setActiveModal, setIsLoggedIn}) => {
+    const navigate = useNavigate();
+
     const emailInput = useRef(null);
     const passwordInput = useRef(null);
     const emailError = useRef(null);
@@ -22,14 +25,14 @@ const LoginModal = ({setActiveModal, setIsLoggedIn}) => {
 
         if(!emailErr && !passwordErr) {
             setIsLoggedIn(true);
-            setActiveModal(null);
+            navigate("/")
         }
     }; 
 
     return (
         <div className="modal-overlay">
             <div className="modal-content">
-                <button className="close-btn" onClick={() => setActiveModal(null)}>X</button>
+                <button className="close-btn" onClick={() => navigate(-1)}>X</button>
                 <h2>Đăng nhập</h2>
                 <form onSubmit={handleOnSubmit}>
                     <div className="form-group">
