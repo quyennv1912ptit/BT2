@@ -1,5 +1,3 @@
-
-
 @import url('https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap');
 
 :root {
@@ -127,7 +125,108 @@ input {
   order: -1;
 }
 
-/* ---------- Post card ---------- */
+/* ---------- Status messages (loading / error / empty) ---------- */
+
+.loading-state,
+.error-state,
+.empty-state {
+  max-width: 900px;
+  margin: 48px auto;
+  padding: 24px;
+  text-align: center;
+  color: var(--text-muted);
+}
+
+.error-state {
+  color: var(--danger);
+}
+
+.error-state h2 {
+  color: var(--danger);
+}
+
+.error-state .btn-back {
+  margin-top: 16px;
+}
+
+/* ---------- Post grid (Home) ---------- */
+
+.post-list-container h2 {
+  max-width: 900px;
+  margin: 0 auto 20px;
+  padding: 32px 24px 0;
+}
+
+.post-grid {
+  max-width: 900px;
+  margin: 0 auto;
+  padding: 0 24px 64px;
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(260px, 1fr));
+  gap: 16px;
+}
+
+.post-card {
+  display: flex;
+  flex-direction: column;
+  background: var(--surface);
+  border: 1px solid var(--border);
+  border-radius: var(--radius);
+  padding: 20px 22px;
+  box-shadow: var(--shadow);
+}
+
+.post-card h3 {
+  font-size: 1.05rem;
+  margin-bottom: 8px;
+}
+
+.post-card > p {
+  color: var(--text-muted);
+  margin: 0 0 12px;
+  flex-grow: 1;
+}
+
+.post-card > div:not(.tags) {
+  display: flex;
+  gap: 14px;
+  font-size: 0.85rem;
+  color: var(--text-muted);
+  margin-bottom: 12px;
+}
+
+.post-card a {
+  align-self: flex-start;
+  color: var(--primary);
+  font-weight: 600;
+  font-size: 0.9rem;
+  text-decoration: none;
+}
+
+.post-card a:hover {
+  text-decoration: underline;
+}
+
+/* ---------- Tags ---------- */
+
+.tags {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 6px;
+  margin-bottom: 10px;
+}
+
+.tags span,
+.tag-badge {
+  background: var(--bg);
+  color: var(--text-muted);
+  border: 1px solid var(--border);
+  border-radius: 999px;
+  padding: 2px 10px;
+  font-size: 0.78rem;
+}
+
+/* ---------- Post card (Manage Posts) ---------- */
 
 .post-item {
   background: var(--surface);
@@ -163,6 +262,46 @@ input {
   border-top: 1px solid var(--border);
 }
 
+.post-item button {
+  margin-right: 8px;
+  padding: 7px 14px;
+  font-size: 0.85rem;
+  font-weight: 600;
+  border-radius: var(--radius);
+  border: 1px solid var(--border);
+  background: var(--surface);
+  color: var(--text);
+  transition: background 0.15s ease, color 0.15s ease, border-color 0.15s ease;
+}
+
+.post-item button:last-child {
+  margin-right: 0;
+}
+
+.post-item .view-button:hover {
+  background: var(--bg);
+}
+
+.post-item .edit-button {
+  color: var(--primary);
+  border-color: var(--primary);
+}
+
+.post-item .edit-button:hover {
+  background: var(--primary);
+  color: #fff;
+}
+
+.post-item .delete-button {
+  color: var(--danger);
+  border-color: var(--danger);
+}
+
+.post-item .delete-button:hover {
+  background: var(--danger);
+  color: #fff;
+}
+
 /* ============================================================
    Forms
    ============================================================ */
@@ -186,7 +325,9 @@ label {
 
 input[type="text"],
 input[type="password"],
-input[type="email"] {
+input[type="email"],
+input[type="number"],
+textarea {
   width: 100%;
   padding: 9px 12px;
   background: var(--surface);
@@ -194,11 +335,21 @@ input[type="email"] {
   border-radius: var(--radius);
   color: var(--text);
   font-size: 0.95rem;
-  transition: border-color 0.15s ease;
+  font-family: inherit;
+  transition: border-color 0.15s ease, box-shadow 0.15s ease;
+}
+
+textarea {
+  min-height: 120px;
+  resize: vertical;
+  line-height: 1.5;
 }
 
 input[type="text"]:focus,
-input[type="password"]:focus {
+input[type="password"]:focus,
+input[type="email"]:focus,
+input[type="number"]:focus,
+textarea:focus {
   outline: none;
   border-color: var(--primary);
   box-shadow: 0 0 0 3px rgba(47, 111, 237, 0.15);
@@ -213,6 +364,17 @@ form > span {
 
 .form-group span:empty {
   display: none;
+}
+
+.error-text {
+  font-size: 0.8rem;
+  color: var(--danger);
+}
+
+form > .error-state {
+  font-size: 0.85rem;
+  color: var(--danger);
+  margin-bottom: 10px;
 }
 
 /* ---------- Buttons ---------- */
@@ -237,6 +399,114 @@ button[type="submit"]:hover,
 .post-item button[type="submit"] {
   padding: 8px 16px;
   font-size: 0.85rem;
+}
+
+/* ============================================================
+   Post Detail
+   ============================================================ */
+
+.post-detail-container {
+  max-width: 700px;
+  margin: 0 auto;
+  padding: 32px 24px 64px;
+  display: flex;
+  flex-direction: column;
+  gap: 20px;
+}
+
+.btn-back {
+  align-self: flex-start;
+  background: transparent;
+  border: 1px solid var(--border);
+  color: var(--text-muted);
+  padding: 8px 14px;
+  border-radius: var(--radius);
+  font-size: 0.85rem;
+  font-weight: 500;
+  transition: background 0.15s ease, color 0.15s ease;
+}
+
+.btn-back:hover {
+  background: var(--bg);
+  color: var(--text);
+}
+
+.post-content {
+  background: var(--surface);
+  border: 1px solid var(--border);
+  border-radius: var(--radius);
+  padding: 24px 26px;
+  box-shadow: var(--shadow);
+}
+
+.post-content h1 {
+  font-size: 1.4rem;
+  margin-bottom: 10px;
+}
+
+.post-body p {
+  color: var(--text);
+  margin: 12px 0 0;
+}
+
+.stats-container {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 16px;
+  margin-top: 16px;
+  padding-top: 16px;
+  border-top: 1px solid var(--border);
+  font-size: 0.85rem;
+  color: var(--text-muted);
+}
+
+.post-comment-container {
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+}
+
+.post-comment-container h2 {
+  font-size: 1.1rem;
+}
+
+.post-comment {
+  background: var(--surface);
+  border: 1px solid var(--border);
+  border-radius: var(--radius);
+  padding: 14px 18px;
+  box-shadow: var(--shadow);
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+  font-size: 0.85rem;
+  color: var(--text-muted);
+}
+
+.comment-body p {
+  color: var(--text);
+  margin: 4px 0;
+  font-size: 0.95rem;
+}
+
+.post-detail-container > form {
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+  background: var(--surface);
+  border: 1px solid var(--border);
+  border-radius: var(--radius);
+  padding: 20px 22px;
+  box-shadow: var(--shadow);
+}
+
+.post-detail-container > form label {
+  margin-bottom: 2px;
+}
+
+.post-detail-container > form button[type="submit"] {
+  align-self: flex-start;
+  margin-top: 4px;
 }
 
 /* ============================================================
@@ -300,6 +570,76 @@ button[type="submit"]:hover,
 .close-btn:hover {
   background: var(--bg);
   color: var(--text);
+}
+
+/* ---------- Delete confirmation ---------- */
+
+.delete-warning {
+  display: flex;
+  align-items: flex-start;
+  gap: 10px;
+  background: #fdecec;
+  border: 1px solid #f5c2c2;
+  border-radius: var(--radius);
+  padding: 14px 16px;
+  margin-bottom: 18px;
+}
+
+.delete-warning-icon {
+  font-size: 1.1rem;
+  line-height: 1;
+}
+
+.delete-warning p {
+  margin: 0;
+  color: var(--text);
+  font-size: 0.9rem;
+}
+
+.delete-warning strong {
+  color: var(--danger);
+}
+
+/* ---------- Modal action buttons ---------- */
+
+.modal-actions {
+  display: flex;
+  justify-content: flex-end;
+  gap: 10px;
+  margin-top: 4px;
+}
+
+.modal-actions button {
+  padding: 9px 18px;
+  border-radius: var(--radius);
+  font-weight: 600;
+  font-size: 0.9rem;
+  border: 1px solid transparent;
+  transition: background 0.15s ease, color 0.15s ease, border-color 0.15s ease;
+}
+
+.btn-secondary {
+  background: var(--surface);
+  border-color: var(--border) !important;
+  color: var(--text);
+}
+
+.btn-secondary:hover {
+  background: var(--bg);
+}
+
+.btn-danger {
+  background: var(--danger);
+  color: #fff;
+}
+
+.btn-danger:hover {
+  background: #b82f2f;
+}
+
+.modal-actions button:disabled {
+  opacity: 0.6;
+  cursor: not-allowed;
 }
 
 .nav-link {

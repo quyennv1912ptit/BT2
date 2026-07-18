@@ -37,20 +37,27 @@ const PostDeleteModal = ({ setActiveModal, post, setPosts }) => {
                 </button>
                 
                 <h2>Xác nhận xóa?</h2>
-                <p>Bài viết <strong>{post.title}</strong> sẽ bị xóa vĩnh viễn và không thể khôi phục.</p>
-                
+                <div className="delete-warning">
+                    <span className="delete-warning-icon">⚠️</span>
+                    <p>Bài viết <strong>{post.title}</strong> sẽ bị xóa vĩnh viễn và không thể khôi phục.</p>
+                </div>
+
                 {error && <div className="error-state">{error}</div>}
-                
-                <div>
-                    <button 
-                        onClick={() => setActiveModal(null)} 
+
+                <div className="modal-actions">
+                    <button
+                        type="button"
+                        className="btn-secondary"
+                        onClick={() => setActiveModal(null)}
                         disabled={isDeleting}
                     >
                         Hủy
                     </button>
-                    
-                    <button 
-                        onClick={handleDeletePost} 
+
+                    <button
+                        type="button"
+                        className="btn-danger"
+                        onClick={handleDeletePost}
                         disabled={isDeleting}
                     >
                         {isDeleting ? "Đang xóa..." : "Xóa bài viết"}
