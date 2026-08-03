@@ -14,8 +14,6 @@ const PostDeleteModal = ({ setActiveModal, post, setPosts }) => {
             
             setPosts(prevPosts => prevPosts.filter(p => p.id !== post.id));
             
-            alert("Xóa bài viết thành công!");
-            
             setActiveModal(null);
             
         } catch (err) {

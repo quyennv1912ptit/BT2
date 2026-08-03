@@ -3,7 +3,7 @@ import { useForm } from "react-hook-form";
 import { createPost } from "../../api/postApi";
 
 const PostCreateModal = ({ setActiveModal, posts, setPosts }) => {
-    const { register, handleSubmit, formState: { errors } } = useForm();
+    const { register, handleSubmit, formState: { errors, isSubmitting } } = useForm();
     const [error, setError] = useState(null);
 
     const countWords = (text) => {
@@ -62,7 +62,6 @@ const PostCreateModal = ({ setActiveModal, posts, setPosts }) => {
                     <div className="form-group">
                         <label>Nội dung</label>
                         <textarea
-                            type="text"
                             {...register("content", {
                                 required: "Vui lòng nhập nội dung",
                                 validate: (value) => {
@@ -86,7 +85,9 @@ const PostCreateModal = ({ setActiveModal, posts, setPosts }) => {
                         {errors.userId && <span className="error-text" style={{ color: "red" }}>{errors.userId.message}</span>}
                     </div>
                     {error && <div className="error-state" style={{ color: "red", marginBottom: "10px" }}>{error}</div>}
-                    <button type="submit">Xác nhận</button>
+                    <button type="submit" disabled={isSubmitting}>
+                        {isSubmitting ? "Đang xử lý..." : "Xác nhận"}
+                    </button>
                 </form>
             </div>
         </div>

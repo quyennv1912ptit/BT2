@@ -2,24 +2,7 @@ import React, { useEffect, useState } from "react";
 import { getPosts } from "../../api/postApi";
 import { Link } from "react-router-dom";
 
-const Home = ({ posts, setPosts }) => {
-    const [isLoading, setIsLoading] = useState(false);
-    const [error, setError] = useState(null);
-    useEffect(() => {
-        const fetchPosts = async () => {
-            setIsLoading(true);
-            setError(null);
-            try {
-                const res = await getPosts();
-                setPosts(res.data.posts);
-            } catch (e) {
-                setError(e.response?.data?.message || "Không thể tải danh sách bài viết. Vui lòng thử lại!");
-            } finally {
-                setIsLoading(false);
-            }
-        };
-        fetchPosts();
-    }, []);
+const Home = ({ posts, setPosts, isLoading, error }) => {
 
     if (isLoading) {
         return <div className="loading-state">Đang tải dữ liệu, vui lòng chờ...</div>;

@@ -44,7 +44,7 @@ const PostDetail = () => {
         navigate(-1);
     };
 
-const onSubmit = (data) => {
+    const onSubmit = (data) => {
         const newComment = {
             id: Date.now(),
             body: data.comment,

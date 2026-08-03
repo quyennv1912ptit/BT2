@@ -2,7 +2,7 @@ import React, { useRef } from "react";
 import { validateEmail, validatePassword } from "../../utils/validators";
 import { useNavigate } from "react-router-dom";
 
-const LoginModal = ({setActiveModal, setIsLoggedIn}) => {
+const LoginModal = ({setIsLoggedIn}) => {
     const navigate = useNavigate();
 
     const emailInput = useRef(null);
