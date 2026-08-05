@@ -31,7 +31,7 @@ const App = () => {
     if (posts.length === 0) {
       fetchPosts();
     }
-  }, [posts.length]);
+  }, []);
 
   return (
     <div className="app-container">
@@ -43,9 +43,9 @@ const App = () => {
         <Route
           path="/"
           element={
-            <Home 
+            <Home
               posts={posts}
-              setPosts={setPosts} 
+              setPosts={setPosts}
               isLoading={isLoading}
               error={error}
             />

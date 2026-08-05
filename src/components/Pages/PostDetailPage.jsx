@@ -27,7 +27,7 @@ const PostDetail = () => {
                     comments: commentsRes.data.comments
                 });
             } catch (err) {
-                if (err.response && err.response.status == 404) {
+                if (err.response && err.response.status === 404) {
                     setError("Không tìm thấy bài viết");
                 } else {
                     setError("Có lỗi xảy ra khi tải bài viết. Vui lòng thử lại!");
@@ -61,11 +61,13 @@ const PostDetail = () => {
         };
 
         setPost(updatedPost);
-        reset();
+        reset({ comment: "" });
     };
 
     const countWords = (text) => {
-        return text.trim().split(/\s+/).length;
+        const trimmed = text.trim();
+        if (!trimmed) return 0;
+        return trimmed.split(/\s+/).length;
     };
 
     if (isLoading) {

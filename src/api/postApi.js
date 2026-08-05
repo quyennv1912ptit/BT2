@@ -23,3 +23,7 @@ export const updatePost = (id, data) => {
 export const deletePost = (id) => {
     return axiosClient.delete(`/posts/${id}`);
 };
+
+export const searchPost = (str) => {
+    return axiosClient.get(`/posts/search?q=${str}`)
+}
