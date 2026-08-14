@@ -20,16 +20,17 @@ const PostEditModal = ({ setActiveModal, post, setPosts }) => {
     const onSubmit = async (data) => {
         setError(null);
         try {
-            const res = await updatePost(post.id, {
+            const res = await updatePost(post.slug, {
                 title: data.title,
                 body: data.content,
             });
 
             const updatedPostFromServer = {
-                ...res.data,
+                ...post,
+                title: data.title,
+                body: data.content,
+                slug: res.data.slug,
                 tags: [...(post.tags || []), "edited"], 
-                views: post.views,
-                reactions: post.reactions
             };
 
             setPosts(prev => prev.map(p => 

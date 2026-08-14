@@ -10,7 +10,7 @@ const PostDeleteModal = ({ setActiveModal, post, setPosts }) => {
         setError(null);
         
         try {
-            await deletePost(post.id);
+            await deletePost(post.slug);
             
             setPosts(prevPosts => prevPosts.filter(p => p.id !== post.id));
             

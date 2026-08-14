@@ -20,28 +20,50 @@ const ManagePosts = ({ posts, setPosts, isLoading, error }) => {
 
     return (
         <div className="manage-posts-container">
-            <button onClick={() => setActiveModal("create-post")}>Tạo bài viết</button>
-            {
-                posts && posts.map((post) => (
-                    <div key={post.id} className="post-item">
-                        <h3>{post.title}</h3>
-                        <p>
-                            {post.body.length > 100
-                                ? `${post.body.substring(0, 100)}...`
-                                : post.body}
-                        </p>
-                        <button className="view-button" onClick={() => navigate(`/posts/${post.id}`)}>Xem</button>
-                        <button className="edit-button" onClick={() => {
-                            setEditPost(post);
-                            setActiveModal('edit-post')
-                        }}>Sửa</button>
-                        <button className="delete-button" onClick={() => {
-                            setDeletePost(post);
-                            setActiveModal('delete-post');
-                        }}>Xóa</button>
-                    </div>
-                ))
-            }
+            <button className="create-button" onClick={() => setActiveModal("create-post")}>
+                + Tạo bài viết
+            </button>
+            
+            <div className="post-list">
+                {posts && posts.length > 0 ? (
+                    posts.map((post) => (
+                        <div key={post.id} className="post-item">
+                            <h3>{post.title}</h3>
+                            <p>
+                                {post.body && post.body.length > 100
+                                    ? `${post.body.substring(0, 100)}...`
+                                    : post.body}
+                            </p>
+                            
+                            <div className="action-buttons">
+                                <button 
+                                    className="view-button" 
+                                    onClick={() => navigate(`/posts/${post.slug}`)}
+                                >
+                                    Xem
+                                </button>
+                                
+                                <button className="edit-button" onClick={() => {
+                                    setEditPost(post);
+                                    setActiveModal('edit-post');
+                                }}>
+                                    Sửa
+                                </button>
+                                
+                                <button className="delete-button" onClick={() => {
+                                    setDeletePost(post);
+                                    setActiveModal('delete-post');
+                                }}>
+                                    Xóa
+                                </button>
+                            </div>
+                        </div>
+                    ))
+                ) : (
+                    <div className="empty-state">Chưa có bài viết nào để quản lý.</div>
+                )}
+            </div>
+
             {activeModal === "create-post" && (
                 <PostCreateModal setActiveModal={setActiveModal} posts={posts} setPosts={setPosts} />
             )}

@@ -1,8 +1,13 @@
-export const validateFullName = (fullName) => {
-    if (fullName.length === 0)
-        return "Tên không được để trống";
-    if (fullName.length < 2)
-        return "Tên phải có ít nhất 2 ký tự";
+export const validateUserName = (userName) => {
+    if (userName.length === 0)
+        return "Tên đăng nhập không được để trống";
+
+    if (userName.length < 2)
+        return "Tên đăng nhập phải có ít nhất 2 ký tự";
+
+    if (/\s/.test(userName))
+        return "Tên đăng nhập không được chứa khoảng trắng";
+
     return "";
 };
 

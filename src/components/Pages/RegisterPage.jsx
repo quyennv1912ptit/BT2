@@ -1,16 +1,31 @@
 import React from "react";
-import { validateFullName, validateEmail, validatePassword, validatePhoneNumber } from "../../utils/validators";
+import { validateUserName, validateEmail, validatePassword, validatePhoneNumber } from "../../utils/validators";
 import { useNavigate } from "react-router-dom";
 import { useForm } from "react-hook-form";
+import { registerUser } from "../../api/authApi";
 
 const RegisterModal = () => {
     const navigate = useNavigate();
 
     const { register, handleSubmit, formState: { errors } } = useForm();
 
-    const onSubmit = (data) => {
-        alert("Đăng ký thành công, vui lòng đăng nhập");
-        navigate("/login");
+    const onSubmit = async (data) => {
+        try {
+            const res = await registerUser({
+                userName: data.userName,
+                email: data.email,
+                password: data.password,
+                phoneNumber: data.phoneNumber,
+            });
+            alert(res.data.message);
+            navigate("/login");
+        } catch (error) {
+            if (error.response) {
+                alert("Lỗi: " + error.response.data.message);
+            } else {
+                alert("Lỗi kết nối đến máy chủ!");
+            }
+        }
     };
 
     return (
@@ -20,15 +35,15 @@ const RegisterModal = () => {
                 <h2>Đăng ký</h2>
                 <form onSubmit={handleSubmit(onSubmit)}>
                     <div className="form-group">
-                        <label>Họ và tên:</label>
+                        <label>Tên đăng nhập</label>
                         <input
                             type="text"
-                            {...register("fullName", {
-                                required: "Vui lòng nhập họ và tên",
-                                validate: (value) => validateFullName(value.trim()) || true
+                            {...register("userName", {
+                                required: "Vui lòng nhập tên đăng nhập",
+                                validate: (value) => validateUserName(value.trim()) || true
                             })}
                         />
-                        {errors.fullName && <span className="error-text">{errors.fullName.message}</span>}
+                        {errors.userName && <span className="error-text">{errors.userName.message}</span>}
                     </div>
 
                     <div className="form-group">

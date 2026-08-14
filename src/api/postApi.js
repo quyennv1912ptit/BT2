@@ -1,29 +1,33 @@
-import axiosClient from "./axiosClient";
+import appClient from "./appClient";
 
 export const getPosts = () => {
-    return axiosClient.get("/posts", { params: { limit: 10 } });
+    return appClient.get("/posts");
 };
 
-export const getPostById = (id) => {
-    return axiosClient.get(`/posts/${id}`);
+export const getPostBySlug = (slug) => {
+    return appClient.get(`/posts/${slug}`);
 };
 
-export const getPostComments = (id) => {
-    return axiosClient.get(`/posts/${id}/comments`);
+export const getPostComments = (slug) => {
+    return appClient.get(`/posts/${slug}/comments`);
 };
 
 export const createPost = (data) => {
-    return axiosClient.post('/posts/add', data);
+    return appClient.post('/posts', data);
 };
 
-export const updatePost = (id, data) => {
-    return axiosClient.put(`/posts/${id}`, data);
+export const updatePost = (slug, data) => {
+    return appClient.put(`/posts/${slug}`, data);
 };
 
-export const deletePost = (id) => {
-    return axiosClient.delete(`/posts/${id}`);
+export const deletePost = (slug) => {
+    return appClient.delete(`/posts/${slug}`);
 };
 
-export const searchPost = (str) => {
-    return axiosClient.get(`/posts/search?q=${str}`)
-}
+export const addPostComment = (slug, data) => {
+    return appClient.post(`/posts/${slug}/comments`, data);
+};
+
+export const getUserById = (id) => {
+    return appClient.get(`/users/${id}`);
+};

@@ -17,19 +17,20 @@ const PostCreateModal = ({ setActiveModal, posts, setPosts }) => {
         try {
             const res = await createPost({
                 title: data.title,
-                body: data.content,
-                userId: Number(data.userId)
+                body: data.content, 
             });
 
             const newPostFromServer = {
-                ...res.data,
-                tags: ["new"],
+                id: res.data.postID,
+                title: data.title,
+                body: data.content,
+                slug: res.data.slug,
+                tags: [],
                 views: 0,
                 reactions: { likes: 0, dislikes: 0 }
             };
 
             setPosts([newPostFromServer, ...posts]);
-
             setActiveModal(null);
 
         } catch (err) {
@@ -43,6 +44,7 @@ const PostCreateModal = ({ setActiveModal, posts, setPosts }) => {
                 <button className="close-btn" onClick={() => setActiveModal(null)}>X</button>
                 <h2>Tạo bài viết</h2>
                 <form onSubmit={handleSubmit(onSubmit)}>
+                    
                     <div className="form-group">
                         <label>Tiêu đề</label>
                         <input
@@ -56,9 +58,10 @@ const PostCreateModal = ({ setActiveModal, posts, setPosts }) => {
                             })}
                         />
                         {errors.title && (
-                            <span>{errors.title.message}</span>
+                            <span className="error-text" style={{ color: "red" }}>{errors.title.message}</span>
                         )}
                     </div>
+                    
                     <div className="form-group">
                         <label>Nội dung</label>
                         <textarea
@@ -71,27 +74,20 @@ const PostCreateModal = ({ setActiveModal, posts, setPosts }) => {
                             })}
                         />
                         {errors.content && (
-                            <span>{errors.content.message}</span>
+                            <span className="error-text" style={{ color: "red" }}>{errors.content.message}</span>
                         )}
                     </div>
-                    <div className="form-group">
-                        <label>userId</label>
-                        <input
-                            type="number"
-                            {...register("userId", {
-                                required: "Vui lòng nhập userId",
-                            })}
-                        />
-                        {errors.userId && <span className="error-text" style={{ color: "red" }}>{errors.userId.message}</span>}
-                    </div>
+
+
                     {error && <div className="error-state" style={{ color: "red", marginBottom: "10px" }}>{error}</div>}
+                    
                     <button type="submit" disabled={isSubmitting}>
                         {isSubmitting ? "Đang xử lý..." : "Xác nhận"}
                     </button>
                 </form>
             </div>
         </div>
-    )
+    );
 };
 
 export default PostCreateModal;

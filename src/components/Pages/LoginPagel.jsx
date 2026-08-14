@@ -1,17 +1,38 @@
-import React, { useRef } from "react";
-import { validateEmail, validatePassword } from "../../utils/validators";
-import { useNavigate } from "react-router-dom";
+import React, { useContext, useRef } from "react";
+import { useNavigate, Navigate } from "react-router-dom";
 import { useForm } from "react-hook-form";
+import { AuthContext } from "../../context/AuthContext";
+import { loginUser } from "../../api/authApi";
 
-const LoginModal = ({ setIsLoggedIn }) => {
+const LoginModal = () => {
     const navigate = useNavigate();
-
+    const {isLoggedIn, Login} = useContext(AuthContext);
+    
     const { register, handleSubmit, formState: { errors } } = useForm();
-
-    const onSubmit = (data) => {
-        setIsLoggedIn(true);
-        navigate("/")
+    
+    if (isLoggedIn) {
+        return <Navigate to="/" replace />;
+    }
+    
+    const onSubmit = async (data) => {
+        try {
+            const res = await loginUser({
+                userName: data.userName,
+                password: data.password,
+            });
+            const {message, user, token} = res.data;
+            Login(user, token);
+            alert(message);
+            navigate("/")
+        } catch (error) {
+            if (error.response) {
+                alert("Lỗi: " + error.response.data.message);
+            } else {
+                alert("Lỗi kết nối đến máy chủ!");
+            }
+        }
     };
+
 
     return (
         <div className="modal-overlay">
@@ -20,17 +41,16 @@ const LoginModal = ({ setIsLoggedIn }) => {
                 <h2>Đăng nhập</h2>
                 <form onSubmit={handleSubmit(onSubmit)}>
                     <div className="form-group">
-                        <label>Email:</label>
+                        <label>Tên đăng nhập</label>
                         <input
                             type="text"
-                            {
-                            ...register("email", {
-                                required: "Vui lòng nhập email",
-                                validate: (value) => validateEmail(value.trim()) || true
+                            {...register("userName", {
+                                required: "Vui lòng nhập tên đăng nhập",
+                                setValueAs: v => v.trim(),
                             })
                             }
                         />
-                        {errors.email && <span>{errors.email.message}</span>}
+                        {errors.userName && <span className="error-text">{errors.userName.message}</span>}
                     </div>
                     <div className="form-group">
                         <label>Mật khẩu:</label>
@@ -39,7 +59,6 @@ const LoginModal = ({ setIsLoggedIn }) => {
                             {
                             ...register("password", {
                                 required: "Vui lòng nhập mật khẩu",
-                                validate: (value) => validatePassword(value) || true
                             })
                             }
                         />

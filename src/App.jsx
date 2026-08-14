@@ -1,5 +1,5 @@
-import React, { useState, useEffect } from "react";
-import { Routes, Route, Navigate, useSearchParams } from "react-router-dom";
+import React, { useEffect, useState, useContext } from "react";
+import { Routes, Route, Navigate } from "react-router-dom";
 import Header from "./components/Header";
 import Home from "./components/Pages/HomePage";
 import ManagePosts from "./components/Pages/ManagePostsPage";
@@ -8,9 +8,11 @@ import RegisterModal from "./components/Pages/RegisterPage";
 import PostDetail from "./components/Pages/PostDetailPage";
 import ProtectedRoute from "./components/ProtectedRoute";
 import { getPosts } from "./api/postApi";
+import { AuthContext } from "./context/AuthContext";
 
 const App = () => {
-  const [isLoggedIn, setIsLoggedIn] = useState(false);
+  const { isLoggedIn, user } = useContext(AuthContext);
+
   const [posts, setPosts] = useState([]);
   const [isLoading, setIsLoading] = useState(false);
   const [error, setError] = useState(null);
@@ -21,24 +23,21 @@ const App = () => {
       setError(null);
       try {
         const res = await getPosts();
-        setPosts(res.data.posts);
+        setPosts(res.data.data || res.data);
       } catch (e) {
         setError(e.response?.data?.message || "Không thể tải danh sách bài viết. Vui lòng thử lại!");
       } finally {
         setIsLoading(false);
       }
     };
-    if (posts.length === 0) {
-      fetchPosts();
-    }
+
+    fetchPosts();
   }, []);
 
   return (
     <div className="app-container">
-      <Header
-        isLoggedIn={isLoggedIn}
-        setIsLoggedIn={setIsLoggedIn}
-      />
+      <Header />
+      
       <Routes>
         <Route
           path="/"
@@ -51,26 +50,31 @@ const App = () => {
             />
           }
         />
+        
         <Route
           path="/manage-posts"
           element={
-            <ProtectedRoute isLoggedIn={isLoggedIn}>
+            <ProtectedRoute>
               <ManagePosts posts={posts} setPosts={setPosts} />
             </ProtectedRoute>
           }
         />
+        
         <Route
           path="/register"
           element={<RegisterModal />}
         />
+        
         <Route
           path="/login"
-          element={<LoginModal setIsLoggedIn={setIsLoggedIn} />}
+          element={<LoginModal />}
         />
+        
         <Route
-          path="/posts/:id"
+          path="/posts/:slug"
           element={<PostDetail />}
         />
+        
         <Route
           path="*"
           element={

@@ -1,31 +1,35 @@
-import React, { useEffect, useState } from 'react';
-import { useNavigate, useParams } from 'react-router-dom';
-import { getPostById, getPostComments } from '../../api/postApi';
-import { useForm } from "react-hook-form";
+import React, { useContext, useEffect, useState } from 'react';
+import { useForm } from 'react-hook-form';
+import { useNavigate, useParams, Link } from 'react-router-dom';
+import { getPostBySlug, getPostComments, getUserById } from '../../api/postApi';
+import { AuthContext } from '../../context/AuthContext';
+import appClient from '../../api/appClient'; // Đảm bảo đường dẫn import appClient chính xác
 
-const PostDetail = () => {
+const PostDetailPage = () => {
     const [post, setPost] = useState(null);
+    const [comments, setComments] = useState([]);
     const [isLoading, setIsLoading] = useState(false);
     const [error, setError] = useState(null);
+
     const { register, handleSubmit, reset, formState: { errors } } = useForm();
 
-    const { id } = useParams();
+    const { user, isLoggedIn } = useContext(AuthContext);
+
+    const { slug } = useParams();
     const navigate = useNavigate();
 
     useEffect(() => {
         const fetchPostDetail = async () => {
             setIsLoading(true);
             setError(null);
-
             try {
                 const [postRes, commentsRes] = await Promise.all([
-                    getPostById(id),
-                    getPostComments(id)
+                    getPostBySlug(slug),
+                    getPostComments(slug)
                 ]);
-                setPost({
-                    ...postRes.data,
-                    comments: commentsRes.data.comments
-                });
+
+                setPost(postRes.data.data);
+                setComments(commentsRes.data.data);
             } catch (err) {
                 if (err.response && err.response.status === 404) {
                     setError("Không tìm thấy bài viết");
@@ -35,39 +39,36 @@ const PostDetail = () => {
             } finally {
                 setIsLoading(false);
             }
-
         };
+
         fetchPostDetail();
-    }, [id])
+    }, [slug]);
 
-    const handleGoBack = () => {
+    const handleBack = () => {
         navigate(-1);
-    };
-
-    const onSubmit = (data) => {
-        const newComment = {
-            id: Date.now(),
-            body: data.comment,
-            likes: 0,
-            user: {
-                username: "guest_user",
-                fullName: "Khách Ẩn Danh"
-            }
-        };
-
-        const updatedPost = {
-            ...post,
-            comments: [...(post.comments || []), newComment]
-        };
-
-        setPost(updatedPost);
-        reset({ comment: "" });
     };
 
     const countWords = (text) => {
         const trimmed = text.trim();
         if (!trimmed) return 0;
         return trimmed.split(/\s+/).length;
+    };
+
+    const onSubmit = async (data) => {
+        try {
+            const response = await appClient.post(`/posts/${slug}/comments`, {
+                body: data.comment
+            });
+
+            alert(response.data.message);
+
+            const commentsRes = await getPostComments(slug);
+            setComments(commentsRes.data.data || commentsRes.data);
+
+            reset({ comment: "" });
+        } catch (error) {
+            alert("Lỗi: " + (error.response?.data?.message || "Lỗi kết nối"));
+        }
     };
 
     if (isLoading) {
@@ -79,15 +80,16 @@ const PostDetail = () => {
             <div className="error-state">
                 <h2>Lỗi!</h2>
                 <p>{error}</p>
-                <button onClick={handleGoBack} className="btn-back">Quay lại</button>
-            </div>)
+                <button onClick={handleBack} className="btn-back">Quay lại</button>
+            </div>
+        );
     }
 
     if (!post) return null;
 
     return (
         <div className="post-detail-container">
-            <button onClick={handleGoBack} className="btn-back">
+            <button onClick={handleBack} className="btn-back">
                 ⬅ Quay lại
             </button>
 
@@ -107,42 +109,51 @@ const PostDetail = () => {
                 </div>
 
                 <div className="stats-container">
-                    <span>👀 Số lượt xem: <strong>{post.views}</strong></span>
+                    <span>👀 Số lượt xem: <strong>{post.views || 0}</strong></span>
                     <span>👍 Lượt thích: <strong>{post.reactions?.likes || 0}</strong></span>
                     <span>👎 Lượt không thích: <strong>{post.reactions?.dislikes || 0}</strong></span>
                 </div>
             </div>
+
             <div className='post-comment-container'>
                 <h2>Bình luận</h2>
-                {post.comments && post.comments.length > 0 ?
-                    post.comments.map(comment => (
+                {comments && comments.length > 0 ? (
+                    comments.map(comment => (
                         <div key={comment.id} className='post-comment'>
-                            <span>Họ tên: {comment.user.fullName} </span>
-                            <span>Tài khoản: {comment.user.username} </span>
+                            {/* Lấy trực tiếp user_name từ cục comment đã được Backend trả về */}
+                            <span>Tài khoản: {comment.user_name} </span>
                             <div className='comment-body'>
                                 <p>{comment.body}</p>
                             </div>
-                            <span>👍 Lượt thích: <strong>{comment.likes || 0}</strong></span>
                         </div>
-                    )) : (
-                        <p>Chưa có bình luận nào.</p>
-                    )
-                }
+                    ))
+                ) : (
+                    <p>Chưa có bình luận nào.</p>
+                )}
             </div>
-            <form onSubmit={handleSubmit(onSubmit)}>
-                <label>Bình luận</label>
-                <input type="text" {...register("comment", {
-                    required: "Vui lòng nhập bình luận",
-                    validate: (value) => {
-                        const wordCount = countWords(value);
-                        return wordCount <= 200 || "Nội dung bình luận tối đa 200 từ";
-                    }
-                })} />
-                {errors.comment && <span>{errors.comment.message}</span>}
-                <button type="submit">Đăng</button>
-            </form>
+
+            {isLoggedIn ? (
+                <form onSubmit={handleSubmit(onSubmit)}>
+                    <label>Bình luận của bạn</label>
+                    <input
+                        type="text"
+                        {...register("comment", {
+                            required: "Vui lòng nhập bình luận",
+                            validate: (value) => {
+                                const wordCount = countWords(value);
+                                return wordCount <= 200 || "Nội dung bình luận tối đa 200 từ";
+                            }
+                        })}
+                    />
+                    {errors.comment && <span className="error-text">{errors.comment.message}</span>}
+                    <button type="submit">Đăng</button>
+                </form>
+            ) : (
+                <p className="login-prompt">
+                    Vui lòng <Link to="/login">đăng nhập</Link> để tham gia bình luận.
+                </p>)}
         </div>
     );
 }
 
-export default PostDetail;
+export default PostDetailPage;
