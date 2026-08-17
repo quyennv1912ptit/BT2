@@ -28,7 +28,8 @@ const ManagePosts = ({ posts, setPosts, isLoading, error }) => {
                 {posts && posts.length > 0 ? (
                     posts.map((post) => (
                         <div key={post.id} className="post-item">
-                            <h3>{post.title}</h3>
+                            <h3>{post.userName}</h3>
+                            <h2>{post.title}</h2>
                             <p>
                                 {post.body && post.body.length > 100
                                     ? `${post.body.substring(0, 100)}...`

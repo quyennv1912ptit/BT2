@@ -7,3 +7,7 @@ export const registerUser = (data) => {
 export const loginUser = (data) => {
     return appClient.post('login', data);
 };
+
+export const updateUserInfo = (data) => {
+    return appClient.put("/users/info", data);
+};

@@ -1,7 +1,7 @@
 import React, { useContext, useEffect, useState } from 'react';
 import { useForm } from 'react-hook-form';
 import { useNavigate, useParams, Link } from 'react-router-dom';
-import { getPostBySlug, getPostComments, getUserById } from '../../api/postApi';
+import { deleteCommentById, getPostBySlug, getPostComments, getUserById } from '../../api/postApi';
 import { AuthContext } from '../../context/AuthContext';
 import appClient from '../../api/appClient'; // Đảm bảo đường dẫn import appClient chính xác
 
@@ -18,28 +18,30 @@ const PostDetailPage = () => {
     const { slug } = useParams();
     const navigate = useNavigate();
 
-    useEffect(() => {
-        const fetchPostDetail = async () => {
-            setIsLoading(true);
-            setError(null);
-            try {
-                const [postRes, commentsRes] = await Promise.all([
-                    getPostBySlug(slug),
-                    getPostComments(slug)
-                ]);
+    const fetchPostDetail = async () => {
+        setIsLoading(true);
+        setError(null);
+        try {
+            const [postRes, commentsRes] = await Promise.all([
+                getPostBySlug(slug),
+                getPostComments(slug)
+            ]);
 
-                setPost(postRes.data.data);
-                setComments(commentsRes.data.data);
-            } catch (err) {
-                if (err.response && err.response.status === 404) {
-                    setError("Không tìm thấy bài viết");
-                } else {
-                    setError("Có lỗi xảy ra khi tải bài viết. Vui lòng thử lại!");
-                }
-            } finally {
-                setIsLoading(false);
+            setPost(postRes.data.data);
+            setComments(commentsRes.data.data);
+        } catch (err) {
+            if (err.response && err.response.status === 404) {
+                setError("Không tìm thấy bài viết");
+            } else {
+                setError("Có lỗi xảy ra khi tải bài viết. Vui lòng thử lại!");
             }
-        };
+        } finally {
+            setIsLoading(false);
+        }
+    };
+
+    useEffect(() => {
+
 
         fetchPostDetail();
     }, [slug]);
@@ -71,6 +73,15 @@ const PostDetailPage = () => {
         }
     };
 
+    const handleClick = async (id) => {
+        try {
+            const res = await deleteCommentById(id);
+            fetchPostDetail();
+        } catch (error) {
+            alert("Lỗi: " + (error.response?.data?.message || "Lỗi kết nối"));
+        }
+    };
+
     if (isLoading) {
         return <div className="loading-state">Đang tải dữ liệu, vui lòng chờ...</div>;
     }
@@ -94,6 +105,7 @@ const PostDetailPage = () => {
             </button>
 
             <div className="post-content">
+                <h2>{post.userName}</h2>
                 <h1>{post.title}</h1>
 
                 <div className="tags">
@@ -110,8 +122,8 @@ const PostDetailPage = () => {
 
                 <div className="stats-container">
                     <span>👀 Số lượt xem: <strong>{post.views || 0}</strong></span>
-                    <span>👍 Lượt thích: <strong>{post.reactions?.likes || 0}</strong></span>
-                    <span>👎 Lượt không thích: <strong>{post.reactions?.dislikes || 0}</strong></span>
+                    <span>👍 Lượt thích: <strong>{post.likes || 0}</strong></span>
+                    <span>👎 Lượt không thích: <strong>{post.dislikes || 0}</strong></span>
                 </div>
             </div>
 
@@ -120,11 +132,13 @@ const PostDetailPage = () => {
                 {comments && comments.length > 0 ? (
                     comments.map(comment => (
                         <div key={comment.id} className='post-comment'>
-                            {/* Lấy trực tiếp user_name từ cục comment đã được Backend trả về */}
                             <span>Tài khoản: {comment.user_name} </span>
                             <div className='comment-body'>
                                 <p>{comment.body}</p>
                             </div>
+                           { (user?.id === comment.user_id || user?.role === "admin") && 
+                             <button className="btn-delete-comment" onClick={() => handleClick(comment.id)}>Xóa bình luận</button>
+                           }
                         </div>
                     ))
                 ) : (

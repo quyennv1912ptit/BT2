@@ -9,6 +9,7 @@ import PostDetail from "./components/Pages/PostDetailPage";
 import ProtectedRoute from "./components/ProtectedRoute";
 import { getPosts } from "./api/postApi";
 import { AuthContext } from "./context/AuthContext";
+import UserInfoPage from "./components/Pages/UserInfoPage";
 
 const App = () => {
   const { isLoggedIn, user } = useContext(AuthContext);
@@ -56,6 +57,15 @@ const App = () => {
           element={
             <ProtectedRoute>
               <ManagePosts posts={posts} setPosts={setPosts} />
+            </ProtectedRoute>
+          }
+        />
+
+        <Route
+          path="/user-info"
+          element={
+            <ProtectedRoute>
+              <UserInfoPage />
             </ProtectedRoute>
           }
         />

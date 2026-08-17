@@ -17,20 +17,10 @@ const PostCreateModal = ({ setActiveModal, posts, setPosts }) => {
         try {
             const res = await createPost({
                 title: data.title,
-                body: data.content, 
+                body: data.content,
             });
 
-            const newPostFromServer = {
-                id: res.data.postID,
-                title: data.title,
-                body: data.content,
-                slug: res.data.slug,
-                tags: [],
-                views: 0,
-                reactions: { likes: 0, dislikes: 0 }
-            };
-
-            setPosts([newPostFromServer, ...posts]);
+            setPosts([res.data.data, ...posts]);
             setActiveModal(null);
 
         } catch (err) {

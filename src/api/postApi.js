@@ -31,3 +31,11 @@ export const addPostComment = (slug, data) => {
 export const getUserById = (id) => {
     return appClient.get(`/users/${id}`);
 };
+
+export const searchPostByKeyword = (keyword) => {
+    return appClient.get(`posts/search?q=${keyword}`)
+};
+
+export const deleteCommentById = (id) => {
+    return appClient.delete(`posts/comments/${id}`);
+}
