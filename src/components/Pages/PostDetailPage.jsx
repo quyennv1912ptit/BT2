@@ -1,9 +1,8 @@
 import React, { useContext, useEffect, useState } from 'react';
 import { useForm } from 'react-hook-form';
 import { useNavigate, useParams, Link } from 'react-router-dom';
-import { deleteCommentById, getPostBySlug, getPostComments, getUserById } from '../../api/postApi';
+import { deleteCommentById, getPostById, getPostCommentsById, createComment } from '../../api/postApi';
 import { AuthContext } from '../../context/AuthContext';
-import appClient from '../../api/appClient'; // Đảm bảo đường dẫn import appClient chính xác
 
 const PostDetailPage = () => {
     const [post, setPost] = useState(null);
@@ -12,10 +11,9 @@ const PostDetailPage = () => {
     const [error, setError] = useState(null);
 
     const { register, handleSubmit, reset, formState: { errors } } = useForm();
-
     const { user, isLoggedIn } = useContext(AuthContext);
 
-    const { slug } = useParams();
+    const { id } = useParams();
     const navigate = useNavigate();
 
     const fetchPostDetail = async () => {
@@ -23,12 +21,12 @@ const PostDetailPage = () => {
         setError(null);
         try {
             const [postRes, commentsRes] = await Promise.all([
-                getPostBySlug(slug),
-                getPostComments(slug)
+                getPostById(id),
+                getPostCommentsById(id)
             ]);
 
-            setPost(postRes.data.data);
-            setComments(commentsRes.data.data);
+            setPost(postRes.data.data || postRes.data);
+            setComments(commentsRes.data.data || commentsRes.data);
         } catch (err) {
             if (err.response && err.response.status === 404) {
                 setError("Không tìm thấy bài viết");
@@ -41,10 +39,8 @@ const PostDetailPage = () => {
     };
 
     useEffect(() => {
-
-
         fetchPostDetail();
-    }, [slug]);
+    }, [id]);
 
     const handleBack = () => {
         navigate(-1);
@@ -58,13 +54,13 @@ const PostDetailPage = () => {
 
     const onSubmit = async (data) => {
         try {
-            const response = await appClient.post(`/posts/${slug}/comments`, {
+            const response = await createComment(id, {
                 body: data.comment
             });
 
-            alert(response.data.message);
+            alert(response.data.message || "Bình luận thành công");
 
-            const commentsRes = await getPostComments(slug);
+            const commentsRes = await getPostCommentsById(id);
             setComments(commentsRes.data.data || commentsRes.data);
 
             reset({ comment: "" });
@@ -73,9 +69,9 @@ const PostDetailPage = () => {
         }
     };
 
-    const handleClick = async (id) => {
+    const handleClick = async (commentId) => {
         try {
-            const res = await deleteCommentById(id);
+            await deleteCommentById(commentId);
             fetchPostDetail();
         } catch (error) {
             alert("Lỗi: " + (error.response?.data?.message || "Lỗi kết nối"));
@@ -117,13 +113,13 @@ const PostDetailPage = () => {
                 </div>
 
                 <div className="post-body">
-                    <p>{post.body}</p>
+                    <p>{post.content}</p>
                 </div>
 
                 <div className="stats-container">
                     <span>👀 Số lượt xem: <strong>{post.views || 0}</strong></span>
-                    <span>👍 Lượt thích: <strong>{post.likes || 0}</strong></span>
-                    <span>👎 Lượt không thích: <strong>{post.dislikes || 0}</strong></span>
+                    <span>👍 Lượt thích: <strong>{post.reactions?.likes || 0}</strong></span>
+                    <span>👎 Lượt không thích: <strong>{post.reactions?.dislikes || 0}</strong></span>
                 </div>
             </div>
 

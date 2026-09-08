@@ -1,41 +1,37 @@
 import appClient from "./appClient";
 
 export const getPosts = () => {
-    return appClient.get("/posts");
-};
-
-export const getPostBySlug = (slug) => {
-    return appClient.get(`/posts/${slug}`);
-};
-
-export const getPostComments = (slug) => {
-    return appClient.get(`/posts/${slug}/comments`);
-};
-
-export const createPost = (data) => {
-    return appClient.post('/posts', data);
-};
-
-export const updatePost = (slug, data) => {
-    return appClient.put(`/posts/${slug}`, data);
-};
-
-export const deletePost = (slug) => {
-    return appClient.delete(`/posts/${slug}`);
-};
-
-export const addPostComment = (slug, data) => {
-    return appClient.post(`/posts/${slug}/comments`, data);
-};
-
-export const getUserById = (id) => {
-    return appClient.get(`/users/${id}`);
+    return appClient.get("/api/posts");
 };
 
 export const searchPostByKeyword = (keyword) => {
-    return appClient.get(`posts/search?q=${keyword}`)
+    return appClient.get(`/api/posts/search?q=${keyword}`);
+};
+
+export const getPostById = (id) => {
+    return appClient.get(`/api/posts/${id}`);
+};
+
+export const createPost = (data) => {
+    return appClient.post(`/api/posts`, data);
+};
+
+export const updatePost = (id, data) => {
+    return appClient.put(`/api/posts/${id}`, data);
+};
+
+export const deletePost = (id) => {
+    return appClient.delete(`/api/posts/${id}`);
+};
+
+export const getPostCommentsById = (id) => {
+    return appClient.get(`/api/posts/${id}/comments`);
+};
+
+export const createComment = (postId, data) => {
+    return appClient.post(`/apit/posts/${postId}/comments"`, data);
 };
 
 export const deleteCommentById = (id) => {
-    return appClient.delete(`posts/comments/${id}`);
-}
+    return appClient.delete(`/api/comments/${id}`);
+};

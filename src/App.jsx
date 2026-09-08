@@ -81,7 +81,7 @@ const App = () => {
         />
         
         <Route
-          path="/posts/:slug"
+          path="/posts/:id/:slug"
           element={<PostDetail />}
         />
         

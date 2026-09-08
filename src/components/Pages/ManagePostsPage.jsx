@@ -27,19 +27,19 @@ const ManagePosts = ({ posts, setPosts, isLoading, error }) => {
             <div className="post-list">
                 {posts && posts.length > 0 ? (
                     posts.map((post) => (
-                        <div key={post.id} className="post-item">
+                        <div key={post._id || post.id} className="post-item">
                             <h3>{post.userName}</h3>
                             <h2>{post.title}</h2>
                             <p>
-                                {post.body && post.body.length > 100
-                                    ? `${post.body.substring(0, 100)}...`
-                                    : post.body}
+                                {post.content && post.content.length > 100
+                                    ? `${post.content.substring(0, 100)}...`
+                                    : post.content}
                             </p>
                             
                             <div className="action-buttons">
                                 <button 
                                     className="view-button" 
-                                    onClick={() => navigate(`/posts/${post.slug}`)}
+                                    onClick={() => navigate(`/posts/${post._id || post.id}/${post.slug}`)}
                                 >
                                     Xem
                                 </button>

@@ -1,7 +1,7 @@
 import React, { useContext, useEffect, useState } from 'react';
 import { AuthContext } from '../../context/AuthContext';
-import { getUserById } from '../../api/postApi';
-import { updateUserInfo } from '../../api/authApi';
+import { getUserById } from '../../api/userApi';
+import { updateUserById } from '../../api/userApi'; 
 
 
 const UserInfoPage = () => {
@@ -13,14 +13,16 @@ const UserInfoPage = () => {
     const fetchUser = async () => {
         try {
             const res = await getUserById(user.id);
-            setUserNew(res.data.data);
+            setUserNew(res.data.data || res.data);
         } catch (error) {
-            alert(error.respone?.data?.message);
+            alert(error.response?.data?.message);
         }
     };
 
     useEffect(() => {
-        fetchUser();
+        if(user) {
+             fetchUser();
+        }
     }, [user]);
 
     const handleEdit = () => {
@@ -30,19 +32,18 @@ const UserInfoPage = () => {
 
     const handleSubmit = async () => {
         try {
-            const res = await updateUserInfo(userEdit);
+            await updateUserById(user.id, userEdit);
             alert("Cập nhật thành công");
             fetchUser();
             setIsEdit(false);
         } catch (error) {
-            alert("Lỗi: ", error.respone?.data?.message);
+            alert("Lỗi: " + error.response?.data?.message);
         }
     };
 
     if (!userNew) {
         return <div>Đang tải thông tin người dùng...</div>;
     }
-
 
     return (
         <div>

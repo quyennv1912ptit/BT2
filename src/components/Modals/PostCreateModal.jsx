@@ -17,10 +17,10 @@ const PostCreateModal = ({ setActiveModal, posts, setPosts }) => {
         try {
             const res = await createPost({
                 title: data.title,
-                body: data.content,
+                content: data.content,
             });
 
-            setPosts([res.data.data, ...posts]);
+            setPosts([res.data.data || res.data, ...posts]);
             setActiveModal(null);
 
         } catch (err) {
@@ -67,7 +67,6 @@ const PostCreateModal = ({ setActiveModal, posts, setPosts }) => {
                             <span className="error-text" style={{ color: "red" }}>{errors.content.message}</span>
                         )}
                     </div>
-
 
                     {error && <div className="error-state" style={{ color: "red", marginBottom: "10px" }}>{error}</div>}
                     

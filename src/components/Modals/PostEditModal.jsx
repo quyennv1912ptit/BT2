@@ -3,10 +3,12 @@ import { useForm } from "react-hook-form";
 import { updatePost } from '../../api/postApi';
 
 const PostEditModal = ({ setActiveModal, post, setPosts }) => {
+    const postId = post._id || post.id;
+
     const { register, handleSubmit, formState: { errors, isSubmitting } } = useForm({
         defaultValues: {
             title: post.title,
-            content: post.body
+            content: post.content
         }
     });
     const [error, setError] = useState(null);
@@ -20,21 +22,15 @@ const PostEditModal = ({ setActiveModal, post, setPosts }) => {
     const onSubmit = async (data) => {
         setError(null);
         try {
-            const res = await updatePost(post.slug, {
+            const res = await updatePost(postId, {
                 title: data.title,
-                body: data.content,
+                content: data.content,
             });
 
-            const updatedPostFromServer = {
-                ...post,
-                title: data.title,
-                body: data.content,
-                slug: res.data.slug,
-                tags: [...(post.tags || []), "edited"], 
-            };
+            const updatedData = res.data.data || res.data;
 
             setPosts(prev => prev.map(p => 
-                p.id === post.id ? updatedPostFromServer : p
+                (p._id || p.id) === postId ? updatedData : p
             ));
 
             setActiveModal(null);

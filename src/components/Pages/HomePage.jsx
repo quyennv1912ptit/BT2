@@ -4,7 +4,6 @@ import SearchBar from "../SearchBar";
 import { searchPostByKeyword } from "../../api/postApi";
 
 const Home = ({ posts, setPosts, isLoading, error }) => {
-
     const timeoutRef = useRef(null);
 
     const onSearch = (keyword) => {
@@ -15,7 +14,7 @@ const Home = ({ posts, setPosts, isLoading, error }) => {
             try {
                 const res = await searchPostByKeyword(keyword);
                 setPosts(res.data.data);
-            } catch (error) {
+            } catch (err) {
                 console.error("Lỗi khi tìm kiếm:", err);
             }
         }, 500);
@@ -40,7 +39,7 @@ const Home = ({ posts, setPosts, isLoading, error }) => {
                     <div className="post-grid">
                         {
                             posts.map((post) => (
-                                <div key={post.id} className="post-card">
+                                <div key={post._id || post.id} className="post-card">
                                     <h3>{post.userName}</h3>
                                     <h3>{post.title}</h3>
                                     <div className="tags">
@@ -49,16 +48,17 @@ const Home = ({ posts, setPosts, isLoading, error }) => {
                                         ))}
                                     </div>
                                     <p>
-                                        {post.body.length > 100
-                                            ? `${post.body.substring(0, 100)}...`
-                                            : post.body}
+                                        {post.content && post.content.length > 100
+                                            ? `${post.content.substring(0, 100)}...`
+                                            : post.content}
                                     </p>
                                     <div>
                                         <span>👀 Lượt xem: {post.views}</span>
-                                        <span>👍 Lượt thích: <strong>{post.likes || 0}</strong></span>
-                                        <span>👎 Lượt không thích: <strong>{post.dislikes || 0}</strong></span>
+                                        <span>👍 Lượt thích: <strong>{post.reactions?.likes || 0}</strong></span>
+                                        <span>👎 Lượt không thích: <strong>{post.reactions?.dislikes || 0}</strong></span>
                                     </div>
-                                    <Link to={`/posts/${post.slug}`}>
+                                    
+                                    <Link to={`/posts/${post._id || post.id}/${post.slug}`}>
                                         Xem chi tiết
                                     </Link>
                                 </div>
